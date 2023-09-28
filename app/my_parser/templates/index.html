@@ -1,0 +1,18 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+<h1>Parser Home</h1>
+
+  <p>Welcome to <em>Parser</em>, a very basic Django website developed as a tutorial.</p>
+
+<h2>Dynamic content</h2>
+
+  <p>The Parser has the following record counts:</p>
+  <ul>
+    <li><strong>Links:</strong> {{ num_links }}</li>
+    <!-- <li><strong>Copies:</strong> {{ num_links }}</li> -->
+    <!-- <li><strong>Copies available:</strong> {{ num_instances_available }}</li> -->
+    <!-- <li><strong>Authors:</strong> {{ num_authors }}</li> -->
+  </ul>
+
+{% endblock %}

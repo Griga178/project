@@ -1,0 +1,19 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+    <h1>Link List</h1>
+
+    {% if link_list %}
+    <ul>
+
+      {% for link in link_list %}
+      <li>
+        <a href="{{ link.get_absolute_url }}">{{ link.name }}</a>
+      </li>
+      {% endfor %}
+
+    </ul>
+    {% else %}
+      <p>There are no link in the library.</p>
+    {% endif %}
+{% endblock %}
