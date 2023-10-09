@@ -22,6 +22,6 @@ urlpatterns = [
 ]
 
 urlpatterns += [
-    # path('', include('my_parser.urls')),
+    path('', include('my_parser.urls')),
     path('my_parser/', include('my_parser.urls')),
 ]

@@ -5,11 +5,8 @@ from django.conf.urls import url
 
 urlpatterns = [
     path('', views.index, name = 'index'),
-    # path('', views.LinkListView.as_view(), name = 'links'),
     url(r'^links/$', views.LinkListView.as_view(), name = 'links'),
-    # url(r'^links/$', views.LinkListView.as_view(), name = 'links'),
-]
+    path('add', views.LinkAddView.as_view(), name = 'add_link')
 
-# urlpatterns += [
-#     url(r'^link/new/$', views.new_link, name='renew-book-librarian'),
-# ]
+
+]
