@@ -1,0 +1,36 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+    <h1>Информация по ссылке</h1>
+    <i><h3>{{link.domain}}</h3></i>
+    {%for domain_setting in link.domain.domain_setting_set.all %}
+      <p><b>{{domain_setting.content_type}}</b>:
+      <i>&lt;{{domain_setting.tag}} {{domain_setting.attr}} = "{{domain_setting.attr_val}}"&gt;</i></p>
+    {%endfor%}
+
+    <p>{{link.id}}: <a href="{{link}}", target="_blank">{{link}}</a></p>
+
+    <input type="button" name="button" id="parse" value="Отпарсить"></input>
+
+    <h4>Таблица результатов парсинга</h4>
+
+
+    <script>
+    $('#parse').click(function(){
+          $.ajax({
+                   type: "POST",
+                   url: "{% url 'parse' %}",
+                   data: {'link_id': '{{link.id}}', 'csrfmiddlewaretoken': '{{ csrf_token }}'},
+                   dataType: "json",
+                   success: function(response) {
+                          // alert(response.message);
+                          alert(JSON.stringify(response.message));
+
+                    },
+                    error: function(rs, e) {
+                           alert(rs.responseText);
+                    }
+              });
+        })
+    </script>
+{% endblock %}

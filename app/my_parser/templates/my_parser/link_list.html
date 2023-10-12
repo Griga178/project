@@ -8,7 +8,7 @@
 
       {% for link in link_list %}
       <li>
-        <a href="{{ link.get_absolute_url }}">{{ link.name }}</a>
+        <a href="{{ link.get_absolute_url }}">{{ link.name }} ({{ link.get_absolute_url }})</a>
       </li>
       {% endfor %}
 
