@@ -22,6 +22,8 @@ urlpatterns = [
 ]
 
 urlpatterns += [
-    path('', include('my_parser.urls')),
+    # path('', include('my_parser.urls')),
+    path('', include('main.urls')),
     path('my_parser/', include('my_parser.urls')),
+    path('accounts/', include('django.contrib.auth.urls')),
 ]

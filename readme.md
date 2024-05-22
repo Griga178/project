@@ -1,4 +1,4 @@
-# Набор рандомных функций и проч. основанных на Django
+# Набор функций и проч. с интерфейсом на Django
 
 ## шаг 0 - создание каталогов "app"
   py -m django startproject app
@@ -16,11 +16,52 @@
   app/manage.py startapp my_parser
 
 ## База данных (sqlite3)
+app/settings.py DATABASES
 
 ### После каждого изменения:
   manage.py makemigrations
   manage.py migrate
 
+
+## Класс "Парсер"
+
+### Функции:
+#### Работа с ссылкой
+##### Добавить новую: str -> sql_object
+##### Показать все: None -> List[sql_object]
+##### Изменить по имени: str_old, str_new -> sql_object
+##### Удалить по имени: str -> None
+
+#### Работа со связями ссылкки
+##### Определить домен: sql_object -> str
+##### Определить создать новый домен
+
+#### Работа настройками домена (crud)
+
+#### Функции парсинга
+##### request.get -> json
+##### request -> html
+##### selenium -> html
+
+### База данных:
+#### "Ссылка"
+##### id
+##### Имя
+##### id домена (FK)
+
+#### "Домен"
+##### id
+##### Имя
+
+#### "Настройка"
+##### id
+##### id домена (FK)
+##### Название
+##### настройка: json_dict (
+#####             how: "requests-html"|"requests.get"|"selenium"
+#####             where: "by_tag_in_html"|"by_keys_in_http_resp"|"etc."
+#####             tag, attribute, value,
+#####             resp_keys)
 
 
 ## функкция 1 "парсер_0"
