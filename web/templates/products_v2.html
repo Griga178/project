@@ -1,0 +1,194 @@
+{% extends "base.html" %}
+
+{% block title %}
+{{title}}
+{% endblock %}
+{% block content %}
+<tbody><tr>
+  <td>Минимальная цена:</td>
+  <td><input class="form-control form-control-sm" type="number"
+    id="min" name="min"></td>
+</tr>
+<tr>
+  <td>Максимальная цена:</td>
+  <td><input aria-controls="data" type="number" class="form-control form-control-sm"
+     id="max" name="max"></td>
+  <button id="btn_price_filter" type="button" name="button">Применить</button>
+</tr>
+<table id="data" class="table table-striped">
+   <thead>
+     <tr>
+       <th>Наименование</th>
+       <th>Количество</th>
+       <th>ед. изм.</th>
+       <th>Цена</th>
+       <th>ОКПД 2</th>
+       <th>КТРУ</th>
+       <th>Страна происхождения</th>
+       <th>Контракт</th>
+       <th>Дата</th>
+       <th>ККН</th>
+       <th>Комментарий</th>
+
+     </tr>
+   </thead>
+ </table>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+  nav_products_v2.setAttribute('class', nav_products_v2.getAttribute('class')+' active')
+  let minEl = document.querySelector('#min');
+  let maxEl = document.querySelector('#max');
+  let confBtn = document.querySelector('#btn_price_filter');
+
+  confBtn.onclick = function () {
+    let min = parseInt(minEl.value, 10);
+    let max = parseInt(maxEl.value, 10);
+    if (min > max) {
+      alert('min > max')
+    }
+    else {
+      $("#data").DataTable().search($("input[type='search']").val()).draw();
+    }
+  };
+
+
+  let draw_table = function () {
+
+    //  добавляем кнопку
+     $("#data").on("preInit.dt", function(){
+       $("#data_wrapper input[type='search']").after(
+        "<button type='button' id='btn_data_search'>Применить</button>");
+             });
+     $('#data').DataTable({
+      // ajax: '/api/products_v2',
+      initComplete: function(){onint();},
+      ajax: {
+        url: '/api/products_v2',
+        data: {
+        min_price: parseInt(document.querySelector('#min').value, 10),
+        max_price: parseInt(document.querySelector('#max').value, 10),
+        number: 123
+
+        },
+        data:function(dtp){
+                    // change the return value to what your server is expecting
+                    // here is the path to the search value in the textbox
+                    // let searchValue = dtp.search.value;
+
+                    dtp.max_price = parseInt(document.querySelector('#max').value, 10)
+                    dtp.min_price = parseInt(document.querySelector('#min').value, 10)
+                    // console.log(dtp)
+                    return dtp;}
+      //   dataSrc: ""
+      },
+      processing: true,
+      serverSide: true,
+      serverMethod: 'post',
+      searching: true,
+      sort: true,
+      serverSide: true,
+      lengthMenu: [10, 25, 50, 100],
+      columns: [
+        {data: 'name', name: 'name'},
+        {data: 'quantity', name: 'quantity',
+        orderable: false, searchable: false},
+        {data: 'measure', orderable: false, searchable: false},
+        {data: 'price', orderable: true, searchable: false},
+        {data: 'okpd_2', searchable: true},
+        {data: 'ktru', searchable: true},
+        {data: 'country_producer', searchable: true},
+        {data: 'contrant_card_id',
+        render: function(data, type, row, meta){
+           if(type === 'display'){
+               data = '<a href="https://zakupki.gov.ru/epz/contract/contractCard/common-info.html?reestrNumber=' + data + '" target="_blank">' + data + '</a>';
+           }
+           return data;
+         }},
+       {data: 'contrant_card_date', searchable: true},
+       {data: 'kkn_name', searchable: false},
+       {data: 'comment', render: function(data, type, row, meta){
+          if(type === 'display'){
+              data = '<span id="comment_'+ row.id + '"'
+                + 'onclick="edit_comment(this)"'
+                + 'class="comment_span"'
+                + '>'
+                + data + '</span>';
+          }
+          return data;
+        }},
+
+      ],
+      createdRow: function (row, data, rowIndex) {
+        // Per-cell function to do whatever needed with cells
+        $.each($('td', row), function (colIndex) {
+            // For example, adding data-* attributes to the cell
+            $(this).attr('data-foo', "bar");
+        });
+      },
+     });
+
+
+     function onint(){
+       // take off all events from the searchfield
+       $("#data_wrapper input[type='search']").off();
+       // Use return key to trigger search
+       $("#data_wrapper input[type='search']").on("keydown", function(evt){
+            if(evt.keyCode == 13){
+              $("#data").DataTable().search($("input[type='search']").val()).draw();
+            }
+       });
+
+       $("#btn_data_search").on("click", function(){
+             $("#data").DataTable().search($("input[type='search']").val()).draw();
+
+       });
+     }
+   };
+
+  $(document).ready(draw_table)
+
+  // Добавление комментариевы
+  let edit_comment = function(span_elem){
+    let default_comment = span_elem.innerHTML
+
+    let result = prompt("Изменить комментарий", default_comment)
+    if (result !== default_comment && result) {
+      save_comment(span_elem, result)
+    }
+  }
+
+  let save_comment = function(span_elem, new_comment){
+
+    let product_id = span_elem.id.split('_')[1]
+
+    $.ajax({
+    url: '/api/products_edit_comment',
+    method: 'post',
+    data: {'id': product_id, 'comment': new_comment},
+    success: function (response){
+      span_elem.innerHTML = response.added_comment
+      }
+    })
+  }
+
+</script>
+
+<style media="screen">
+  .comment_span {
+    font-style: italic;
+    font-family: cursive;
+    color: khaki;
+    cursor: pointer;
+    min-width: 100%;
+    min-height: 20px;
+    display: block;
+    background: teal;
+  }
+  .comment_span:hover {
+    background: rosybrown;    
+  }
+</style>
+{% endblock %}

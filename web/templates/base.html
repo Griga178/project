@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+
+    <title>{% block title %} 01100111 {% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.25/css/dataTables.bootstrap5.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='sidebars.css')}}">
+    {% block header %}{% endblock %}
+
+  </head>
+  <body>
+    <main>
+      <!-- <div class="nav_menu"> -->
+
+
+    <div class="d-flex flex-column flex-shrink-0 p-3 bg-light" style="width: 280px;">
+      <a href="#" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-dark text-decoration-none">
+        <svg class="bi me-2" width="40" height="32"><use xlink:href="#bootstrap"/></svg>
+        <span class="fs-4">Меню</span>
+      </a>
+      <hr>
+      <ul class="nav nav-pills flex-column mb-auto">
+        <li class="nav-item">
+          <a href="{{url_for('main')}}" class="nav-link link-dark" id="nav_main" aria-current="page">
+            <svg class="bi me-2" width="16" height="16"><use xlink:href="main.html"/></svg>
+            Главная
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="{{url_for('get_parse_page')}}" class="nav-link link-dark" id="nav_parser" aria-current="page">
+            <svg class="bi me-2" width="16" height="16"><use xlink:href="main.html"/></svg>
+            Парсер
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="{{url_for('products_v2')}}" class="nav-link link-dark" id="nav_products_v2" aria-current="page">
+            <svg class="bi me-2" width="16" height="16"><use xlink:href="main.html"/></svg>
+            Товары
+          </a>
+        </li>
+        <li>
+          <a href="#" class="nav-link link-dark">
+            <svg class="bi me-2" width="16" height="16"><use xlink:href="work_table.html"/></svg>
+            Рабочая таблица (no)
+          </a>
+        </li>
+
+      </ul>
+      <hr>
+      <div class="dropdown">
+        <a href="#" class="d-flex align-items-center link-dark text-decoration-none dropdown-toggle" id="dropdownUser2" data-bs-toggle="dropdown" aria-expanded="false">
+          <!-- фото usera -->
+          <!-- <img src="gpt 3.webp" alt="" width="32" height="32" class="rounded-circle me-2"> -->
+          <strong>Аккаунт (no)</strong>
+        </a>
+        <ul class="dropdown-menu text-small shadow" aria-labelledby="dropdownUser2">
+          <li><a class="dropdown-item" href="#">Настройки</a></li>
+          <li><a class="dropdown-item" href="#">Профиль</a></li>
+          <li><hr class="dropdown-divider"></li>
+          <li><a class="dropdown-item" href="#">Выход</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+    <div class="b-example-divider"></div>
+    <div class = "container">
+      <!-- <ul>
+        <li><a href="{{url_for('main')}}">Главная</a></li>
+        <li><a href="{{url_for('get_parse_page')}}">Парсер</a></li>
+        <li><a href="{{url_for('products')}}">Товары (Долго грузит (не более 1 мин))</a></li>
+        <li><a href="{{url_for('products_v2')}}">Товары 2.0 (Быстро грузит)</a></li>
+      </ul> -->
+
+
+    {% block content %}{% endblock %}
+  <!-- </div> -->
+
+  </main>
+
+
+    <div class="separator clear_fix"></div>
+    <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.js"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.25/js/dataTables.bootstrap5.js"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script> -->
+    {% block scripts %}
+    {% endblock %}
+
+  </body>
+</html>

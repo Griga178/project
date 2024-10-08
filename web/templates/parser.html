@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+
+{% block title %}
+Парсер
+{% endblock %}
+
+
+{% block header %}
+<link rel="stylesheet" media="all" href="{{ url_for('static', filename='parser.css')}}">
+
+{% endblock %}
+
+
+
+{% block content %}
+
+<div class="py-5 text-center">
+
+  <h2>Парсер</h2>
+  <p class="lead">Функция скачивающая информацию по контрактам с сайта zakupki.gov
+  </p>
+</div>
+<!-- Сводная таблица -->
+<div class="row g-5">
+  <div class="col-md-5 col-lg-4 order-md-last">
+    <h4 class="d-flex justify-content-between align-items-center mb-3">
+      <span class="text-primary">Общая информация <small class="text-muted" id='ci_message_small'>(идет подсчет)</small> </span>
+    </h4>
+    <ul class="list-group mb-3">
+      <li class="list-group-item d-flex justify-content-between lh-sm">
+        <div>
+          <h6 class="my-0">Количество контрактов</h6>
+          <small class="text-muted">всего:</small>
+        </div>
+        <span class="text-muted" id='common_info_contract_amount'>"*"</span>
+      </li>
+      <li class="list-group-item d-flex justify-content-between lh-sm">
+        <div>
+          <h6 class="my-0">Количество товаров</h6>
+          <small class="text-muted">всего:</small>
+        </div>
+        <span class="text-muted" id='common_info_product_amount'>"*"</span>
+      </li>
+      <li class="list-group-item d-flex justify-content-between lh-sm">
+        <div>
+          <h6 class="my-0">Период</h6>
+          <small class="text-muted">Даты скачанных контрактов</small>
+        </div>
+        <span class="text-muted">
+          <span id='common_info_first_contract_date'>"*"</span>
+           -
+          <span id='common_info_last_contract_date'>"*"</span></span>
+      </li>
+      <li class="list-group-item d-flex justify-content-between lh-sm">
+        <div>
+          <h6 class="my-0">Количество контрактов без товаров</h6>
+          <small class="text-muted">всего:</small>
+        </div>
+        <span class="text-muted" id='common_info_empty_contract_amount'>"*"</span>
+      </li>
+      <li class="list-group-item d-flex justify-content-between bg-light">
+        <!-- <div class="text-success"> -->
+        <div >
+          <h6 class="my-0">Последняя дата обновления</h6>
+          <small class="text-muted">в реестре контрактов</small>
+        </div>
+        <!-- <span class="text-success">28.12.2023</span> -->
+        <!-- <strong>28.12.2023</strong> -->
+        <span id='common_info_last_update_date'>- - -</span>
+      </li>
+    </ul>
+  </div>
+  <!-- Функции -->
+  <div class="col-md-7 col-lg-8">
+    <fieldset  id='fldst_contract_dates'>
+      <div class="row g-3">
+        <h4 class="mb-3">Номера контрактов</h4>
+        <div class="col-sm-6">
+          <label for="lastName" class="form-label">Дата начала</label>
+          <input type="date" class="form-control" id="inp_start_date" placeholder="" value="" required>
+        </div>
+        <div class="col-sm-6">
+          <label for="lastName" class="form-label">Дата конца</label>
+          <input type="date" class="form-control" id="inp_end_date" placeholder="" value="" required>
+        </div>
+        <p class="lead"></p>
+      </div>
+      </fieldset>
+      <button class="w-40 btn btn-primary btn-lg" type="submit" id='btn_parse_number_start'>Скачать номера контрактов</button>
+      <div class="" id="div_number_progres" hidden = true>
+        <div class="progress mb-3 position-relative">
+          <div id="progress_bar_parse_number" class="progress-bar bg-primary" role="progressbar" aria-valuenow="" style="width:0%" aria-valuemin="0" aria-valuemax="100">
+            <small class="justify-content-center d-flex position-absolute w-100" id="progressbar_date">0</small>
+          </div>
+        </div>
+      </div>
+      <button class="w-20 btn btn-danger btn-lg" type="submit" id='btn_parse_number_stop' hidden>Стоп</button>
+      <button class="w-20 btn btn-success btn-lg" type="submit" id='btn_parse_number_refresh' hidden>Сбросить настройки</button>
+      <hr class="my-4">
+
+      <h4 class="mb-3">Товары</h4>
+      <p class="lead">В базе <span id='common_info_empty_contract_amount_2'>"*"</span> контрактов без информации по товарам</p>
+      <button class="w-20 btn btn-primary btn-lg" type="submit" disabled id='btn_parse_products_start'>Отпарсить</button>
+
+      <hr class="my-4">
+      <h4 class="mb-3">Обновление</h4>
+      <p class="lead">Последняя дата обновления <span id='common_info_last_update_date_2'>- - -</span>, можно проверить
+        на предмет штрафов или наличие новых завершенных контрактов</p>
+      <button class="w-20 btn btn-primary btn-lg" type="submit" disabled>Отпарсить</button>
+
+      <hr class="my-4">
+      <h4 class="mb-3">Выполнить все!</h4>
+      <p class="lead"> качаем все новые контракты, потом товары, проверяем обновления</p>
+      <button class="w-20 btn btn-primary btn-lg" type="submit" disabled>Начать</button>
+  </div>
+
+  </div>
+
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+  let app_active = {{app_status}}
+  nav_parser.setAttribute('class', nav_parser.getAttribute('class')+' active')
+
+
+</script>
+<script src="{{ url_for('static', filename='parser_products.js') }}"></script>
+<script src="{{ url_for('static', filename='parser_numbers.js') }}"></script>
+<script src="{{ url_for('static', filename='parser_base.js') }}"></script>
+{% endblock %}

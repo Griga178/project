@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block content %}
+
+<table id="data" class="table table-striped">
+   <thead>
+     <tr>
+       <th>Наименование</th>
+       <th>Количество</th>
+       <th>ед. изм.</th>
+       <th>Цена</th>
+       <th>ОКПД 2</th>
+       <th>КТРУ</th>
+       <th>Страна происхождения</th>
+       <th>Контракт</th>
+       <th>Дата</th>
+
+     </tr>
+   </thead>
+ </table>
+
+{% endblock %}
+{% block scripts %}
+
+<script>
+
+  $(document).ready(function () {
+     let MainTable = $('#data').DataTable({
+       ajax: '/api/products',
+       columnDefs: [
+         { type: 'currency', targets: 0 }
+       ],
+       columns: [
+         {data: 'name'},
+         {data: 'quantity', orderable: false, searchable: false},
+         {data: 'measure', orderable: false, searchable: false},
+         {data: 'price', orderable: true, searchable: false},
+         {data: 'okpd_2', searchable: true},
+         {data: 'ktru', searchable: true},
+         {data: 'country_producer', searchable: true},
+         {data: 'contrant_card_id',
+         render: function(data, type, row, meta){
+            if(type === 'display'){
+                data = '<a href="https://zakupki.gov.ru/epz/contract/contractCard/common-info.html?reestrNumber=' + data + '" target="_blank">' + data + '</a>';
+            }
+            return data;
+          }},
+        {data: 'contrant_card_date', searchable: true},
+
+       ],
+     });
+
+   });
+
+  </script>
+{% endblock %}
