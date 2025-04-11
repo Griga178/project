@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block header %}
+{% block title %}
+<title>Категории товаров</title>
+{% endblock %}
+<style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+{% endblock %}
+{% block content %}
+    <h1>Список</h1>
+
+    <table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Название</th>
+            <th>Комментарий</th>
+            <th>Подкатегории</th>
+            <th>Характеристики</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for category in categories[:10] %}
+        <tr>
+            <td>{{ category.id }}</td>
+            <td>{{ category.name }}</td>
+            <td>{{ category.comment }}</td>
+            <td>{{ category.sub_categories|length }}</td>
+            <td>
+                <ul>
+                    {% for characteristic in category.characteristics %}
+                    <li>{{ characteristic.name }} ({{ characteristic.type }})</li>
+                    {% endfor %}
+                </ul>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

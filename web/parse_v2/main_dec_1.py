@@ -1,5 +1,9 @@
-# from .main import Parser_ver_2
-from .main import *
+# from .main import *
+# Parser_class = Parser_ver_2
+
+from .test import *
+Parser_class = Parser_ver_3
+
 from .card_parsing import read_common_info
 from .card_parsing import read_product_info
 from .card_parsing import check_penalty
@@ -220,7 +224,8 @@ def parse_products(self):
             print(p_counter, product_counter, '<- - -', end = '\r')
 
             if p_counter % 10 == 0:
-                time.sleep(5)
+                time.sleep(4)
+                # pass
         except OperationalError:
             print('\nOperationalError:', c_db.number, '\n')
             self.db.session.rollback()
@@ -239,7 +244,9 @@ def parse_products(self):
         print(f'Вревмя выполнения: {int(cur_sec // 60)} мин. {cur_sec} сек.)')
 
 
-Parser_ver_2.parse_products = parse_products
-Parser_ver_2.parse_common_info = parse_common_info
-Parser_ver_2.parse_target_info = parse_target_info
-Parser_ver_2.parse_penalty = parse_penalty
+
+
+Parser_class.parse_products = parse_products
+Parser_class.parse_common_info = parse_common_info
+Parser_class.parse_target_info = parse_target_info
+Parser_class.parse_penalty = parse_penalty

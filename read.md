@@ -35,7 +35,7 @@ NOt actual app2.py
 
 Миграции Бд
 
-установка:
+      установка:
 pip install alembic
 инит в папку "migration":
 py -m alembic init migration
@@ -44,17 +44,29 @@ py -m alembic init migration
 sqlalchemy.url = sqlite:///C:/Users/G.Tishchenko/Desktop/myfiles/zakupki.db
 
 импортируем + подключаем Метаданные от sqlalchemy: migration/env.py
-from db import *
-target_metadata = Base.metadata
+from web.models import *
+target_metadata = db.metadata
 
 Создаем версию БД
 py -m alembic revision --autogenerate -m 'initial'
 
-внесение изменений
+    внесение изменений
 1 вносим изменения в модель (tables.py)
 2 создаем автоматическую миграцию:
-py -m alembic revision --autogenerate  -m "comment"
+py -m alembic revision --autogenerate  -m "pp_id2"
+python3.9 -m alembic revision --autogenerate  -m "add SubCategory"
 
 4 запуск
+(1 вар)
 py -m alembic upgrade 911...
+(2 вар)
+py -m alembic upgrade head
 ...вносятся изменения в sql таблице
+
+
+Карта: (не доделано)
+Структура каталогов
+- migration: файлы миграций БД
+...
+- web: модули проекта
+-

@@ -6,14 +6,43 @@
 
 {% block content %}
 <div class="py-5 text-center">
-<h2>Просто главная</h2>
+<h2>Старт</h2>
 </div>
+<p>медленная загрузка справочника</p>
+<input type="file" id="fileInput" />
+
+
 {% endblock %}
 
 {% block scripts %}
+
 <script type="text/javascript">
   nav_main.setAttribute('class', nav_main.getAttribute('class')+' active')
 
+  document.getElementById('fileInput').addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const formData = new FormData();
+            formData.append('file', file);
+
+            fetch('/upload', { // Укажите свой URL для загрузки
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Ошибка загрузки файла');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Файл загружен успешно:', data);
+            })
+            .catch(error => {
+                console.error('Ошибка:', error);
+            });
+        }
+    });
 </script>
 
 {% endblock %}

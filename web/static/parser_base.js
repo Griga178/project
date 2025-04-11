@@ -15,7 +15,7 @@ let fill_common_info = function(responce_objest) {
   common_info_empty_contract_amount_2.innerHTML = responce_objest.empty_contract_amount
   common_info_product_amount.innerHTML = responce_objest.product_amount + ' шт'
 
-  if (responce_objest.empty_contract_amount > 0) 
+  if (responce_objest.empty_contract_amount > 0)
   btn_parse_products_start.removeAttribute('disabled')
 }
 
@@ -77,4 +77,4 @@ setInterval(
     console.log('have not start - zero')
 
 },
-   1000);
+   5000);

@@ -2,12 +2,14 @@
 <html lang="en" dir="ltr">
   <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>{% block title %} 01100111 {% endblock %}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.25/css/dataTables.bootstrap5.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='sidebars.css')}}">
-    {% block header %}{% endblock %}
+    {% block header %}
+    <title>{% block title %} 01100111 {% endblock %}</title>
+    {% endblock %}
 
   </head>
   <body>
@@ -46,6 +48,19 @@
             Рабочая таблица (no)
           </a>
         </li>
+        <li>
+          <a href="{{url_for('get_gisp_proto')}}" class="nav-link link-dark">
+            <svg class="bi me-2" width="16" height="16"></svg>
+            Каталог продукции
+          </a>
+        </li>
+        <li>
+          <a href="{{url_for('show_categories')}}" class="nav-link link-dark">
+            <svg class="bi me-2" width="16" height="16"></svg>
+            Категории
+          </a>
+        </li>
+
 
       </ul>
       <hr>

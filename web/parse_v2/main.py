@@ -10,9 +10,8 @@ class Parser_ver_2():
     get_today = get_today
     insert_new = insert_new
     def __init__(self, **kwargs):
-        self.app = kwargs['app']
+        self.app = kwargs['app'] # для доступа к БД
         self.db = kwargs['db']
-        # self.db_api = kwargs['db_api']
         self.Company = kwargs['Company']
         self.Contrant_card = kwargs['Contrant_card']
         self.Product = kwargs['Product']
@@ -33,6 +32,8 @@ class Parser_ver_2():
             'budgetLevelsIdNameHidden': '{}',
             # 'contractDateFrom': '30.12.2023',
             # 'contractDateTo': '02.02.2024',
+            # 'contractPriceFrom': 0,
+            # 'contractPriceTo': 1,
             'sortBy': 'PRICE', #PRICE UPDATE_DATE
             'pageNumber': 1, # '1'
             'sortDirection': 'false',
@@ -54,7 +55,8 @@ class Parser_ver_2():
         self.date_to = self.get_today()
         self.filter_date_from = False
         self.filter_date_to = False
-        self.price_filter = False
+
+        self.contracts_without_filter = 0
 
         response = self.session.get(
             self.url,
@@ -110,10 +112,10 @@ class Parser_ver_2():
         self.app_status = 1
         self.days_amount = (self.date_to - self.date_from).days
         days_step = 5
-        # настраиваем запрос
+        # настраиваем стандартный запрос (только даты)
         self.filter_date_to = self.filter_date_from + timedelta(days = days_step)
         self.set_dates_query()
-        print('Запуск парсера')
+        # print('Запуск парсера')
         while self.filter_date_from < self.date_to and self.app_status == 1:
             self.parse_progress = round((1 - (self.date_to - self.filter_date_from).days / self.days_amount) * 100)
             # print(self.parse_progress, self.days_amount)
@@ -129,83 +131,102 @@ class Parser_ver_2():
                 self.query_attemps_q += 1
                 continue
             else:
+                # print('\nУспешное подключение')
                 self.query_attemps_q = 0
             # проверяем количество контрактов
             contract_amount = get_contract_amount(response)
-            # print(self.params['contractDateFrom'], '-', self.params['contractDateTo'])
-            # print('Нашлось контрактов:', contract_amount)
+
+            print(self.params['contractDateFrom'], '-', self.params['contractDateTo'])
+            if self.params.get('contractPriceTo'):
+                print(self.params['contractPriceFrom'], '-', self.params['contractPriceTo'])
+            print('Нашлось контрактов:', contract_amount, f'/({self.contracts_without_filter})')
 
             if contract_amount == 0:
-                self.filter_date_from += timedelta(days = 1)
-                self.filter_date_to = self.filter_date_from + timedelta(days = days_step)
-                self.set_dates_query()
-                continue
-            elif contract_amount < 1000:
-                page_amount = get_page_amount(contract_amount)
-                self.price_filter = False
-            else:
+                if not self.params.get('contractPriceTo'):
 
-                if self.filter_date_from == self.filter_date_to:
-                    page_amount = 20
-                    self.price_filter = True
                 else:
+                    # Увеличиваем верхний диапазон фильтра по цене
+                    top_price = self.params.get('contractPriceTo')
+                    price_range = top_price - self.params['contractPriceFrom']
+
+                    self.params['contractPriceTo'] = top_price + price_range
+            elif contract_amount >= 1000:
+                if self.filter_date_from == self.filter_date_to:
+                    # много контрактов за 1 день (не выводит > 1000 шт)
+                    if not self.params.get('contractPriceTo'):
+                        # Устанавливам ценовой фильтр
+                        self.params['contractPriceFrom'] = 0
+                        self.params['contractPriceTo'] = 1000000
+                        self.contracts_without_filter = contract_amount
+                    else:
+                        # Уменьшаем верхний диапазон фильтра по цене
+                        top_price = self.params.get('contractPriceTo')
+                        price_range = top_price - self.params['contractPriceFrom']
+
+                        self.params['contractPriceTo'] = top_price - price_range / 2
+                else:
+                    # Уменьшаем период запроса
                     self.filter_date_to = self.filter_date_to - timedelta(days = 1)
                     self.set_dates_query()
-                    continue
-
-            # сохраняем контракты - перелистываем
-            contrant_cards = []
-            for i in range(page_amount):
-                # print(f'скачиваем контракты с листа № {self.params["pageNumber"]}')
-                contrant_cards += get_contract_numbers(response)
-                self.counter += len(contrant_cards)
-                # print('перелистываем')
-                self.params['pageNumber'] += 1
-
-                response = self.get_query()
-                if response.status_code != 200:
-                    print(f'ОШИБКА ПРИ ПЕРЕЛИСТЫВАНИИ: {response.status_code} ({self.query_attemps_q})')
-                    if self.query_attemps_q > 10:
-                        self.query_attemps_q = 0
-                        self.report['message'] = f'>10 попыток запроса ПЕРЕЛИСТЫВАНИЯ {response.status_code}'
-                        self.report.update(self.params)
-                        print(self.report)
-                        if contrant_cards:
-                            self.insert_new(contrant_cards)
-                            print(f'Контракты сохранили {len(contrant_cards)}')
-                        break
-                    time.sleep(1)
-                    self.query_attemps_q += 1
-                    continue
+            else:
+                if self.params.get('contractPriceTo'):
+                    self.contracts_without_filter -= contract_amount
+                    # примерный остаток неотпарсенных контрактов
+                    if self.contracts_without_filter < 1000:
+                        self.params['contractPriceFrom'] = self.params['contractPriceTo']
+                        del self.params['contractPriceTo']
+                    else:
+                        self.params['contractPriceFrom'] = self.params['contractPriceTo']
+                        self.params['contractPriceTo'] = self.params['contractPriceTo'] * 2
                 else:
-                    self.query_attemps_q = 0
+                    # переход на новый диапазон дат
+                    self.filter_date_from = self.filter_date_to + timedelta(days = 1)
+                    self.filter_date_to += timedelta(days = days_step)
+                    self.set_dates_query()
+                    if self.params.get('contractPriceFrom'):
+                        del self.params['contractPriceFrom']
+                        self.contracts_without_filter = 0
 
-            else:
-                self.params['pageNumber'] = 1
-                self.insert_new(contrant_cards)
-                print(f'Контракты сохранили {len(contrant_cards)}')
+                # Парсим
+                page_amount = get_page_amount(contract_amount)
+                contrant_cards = []
+                for i in range(page_amount):
+                    # print(f'скачиваем контракты с листа № {self.params["pageNumber"]}')
+                    contrant_cards += get_contract_numbers(response)
+                    self.counter += len(contrant_cards)
+                    # print('перелистываем')
+                    self.params['pageNumber'] += 1
 
+                    response = self.get_query()
+                    if response.status_code != 200:
+                        print(f'ОШИБКА ПРИ ПЕРЕЛИСТЫВАНИИ: {response.status_code} ({self.query_attemps_q})')
+                        if self.query_attemps_q > 10:
+                            self.query_attemps_q = 0
+                            self.report['message'] = f'>10 попыток запроса ПЕРЕЛИСТЫВАНИЯ {response.status_code}'
+                            self.report.update(self.params)
+                            print(self.report)
+                            if contrant_cards:
+                                self.insert_new(contrant_cards)
+                                print(f'Контракты сохранили {len(contrant_cards)}')
+                            break
+                        time.sleep(1)
+                        self.query_attemps_q += 1
+                        continue
+                    else:
+                        self.query_attemps_q = 0
+                else:
+                    self.params['pageNumber'] = 1
+                    self.insert_new(contrant_cards)
+                    print(f'Контракты сохранили {len(contrant_cards)}')
 
-
-            if self.price_filter:
-                # максимальная цена отпарсенного контракта
-                self.params['contractPriceFrom'] = 1000000
-            else:
-                self.filter_date_from = self.filter_date_to + timedelta(days = 1)
-                self.filter_date_to += timedelta(days = days_step)
-                self.set_dates_query()
-                if self.params.get('contractPriceFrom'):
-                    del self.params['contractPriceFrom']
         else:
+            # конец цикла while
             self.app_status = 11
             self.parse_progress = 100
             # self.params['pageNumber'] = 1
-            if self.params.get('contractPriceFrom'):
-                del self.params['contractPriceFrom']
-            # if self.params.get('contractDateFrom'):
-            #     del self.params['contractDateFrom']
-            # if self.params.get('contractDateTo'):
-            #     del self.params['contractDateTo']
+            # if self.params.get('contractPriceFrom'):
+            #     del self.params['contractPriceFrom']
+
 
     def refresh_app(self):
         self.parse_progress = 0

@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block header %}
+<style>
+
+  .filter {
+      width: 30%;
+      margin-right: 20px;
+  }
+  .table-container {
+      width: 70%;
+  }
+  table {
+      width: 100%;
+      border-collapse: collapse;
+  }
+  th, td {
+      border: 1px solid #ccc;
+      padding: 8px;
+      text-align: left;
+  }
+  th {
+      background-color: #f2f2f2;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="filter">
+  <h1>Filter Items</h1>
+    <form method="POST">
+        {{ form.hidden_tag() }}
+        <div>
+            {{ form.search.label }}<br>
+            {{ form.search(size=32) }}<br>
+            {{ form.submit() }}
+        </div>
+    </form>
+     <h2>Фильтр товаров</h2>
+     <form method="POST">
+       <label>
+           <input type="text" name="characteristic_1"> Характеристика 1
+       </label><br>
+       <label>
+           <input type="checkbox" name="characteristic_2"> Характеристика 2
+       </label><br>
+       <label>
+           <input type="checkbox" name="characteristic_2"> Характеристика 3
+       </label><br>
+       <button type="submit">Применить фильтр</button>
+     </form>
+ </div>
+
+ <div class="table-container">
+     <h2>Таблица товаров</h2>
+     <table>
+         <thead>
+             <tr>
+                 <th>Название</th>
+                 <th>Описание</th>
+                 <th>Цена</th>
+             </tr>
+         </thead>
+         <tbody>
+             <tr>
+                 <td>Товар 1</td>
+                 <td>Описание товара 1</td>
+                 <td>1000 руб.</td>
+             </tr>
+             <tr>
+                 <td>Товар 2</td>
+                 <td>Описание товара 2</td>
+                 <td>1500 руб.</td>
+             </tr>
+             <tr>
+                 <td>Товар 3</td>
+                 <td>Описание товара 3</td>
+                 <td>2000 руб.</td>
+             </tr>
+         </tbody>
+     </table>
+ </div>
+{% endblock %}

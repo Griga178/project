@@ -1,7 +1,7 @@
 from .view_main_page import *
-from .parse_v2 import Parser_ver_2
+from .parse_v2 import Parser_class
 
-parse_app = Parser_ver_2(
+parse_app = Parser_class(
     app = app,
     db = db,
     Contrant_card = Contrant_card,

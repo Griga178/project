@@ -1,5 +1,5 @@
 # from .main import Parser_ver_2
-from .main_dec_1 import Parser_ver_2
+from .main_dec_1 import Parser_class
 
 '''
     |- bs_funcs - парсинг инфы из списка найденных контрактов
@@ -9,6 +9,7 @@ from .main_dec_1 import Parser_ver_2
     convert_data.py - функции очистки данных
 
     main.py - создан класс парсера, добавлены функции выше
+        прописаны параметры запроса в headers запроса
 
     |- card_parsing - парсинг инфы с карточки контракта, поставщик суммы, товары
         и проч.
